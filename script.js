@@ -1,3 +1,38 @@
+  (function () {
+    var root = document.documentElement;
+    var toggle = document.querySelector('.theme-toggle');
+    if (!toggle) { return; }
+
+    var getStored = function () {
+      try { return localStorage.getItem('theme'); } catch (e) { return null; }
+    };
+    var setStored = function (value) {
+      try { localStorage.setItem('theme', value); } catch (e) {}
+    };
+    var effectiveTheme = function () {
+      var explicit = root.getAttribute('data-theme');
+      if (explicit === 'dark' || explicit === 'light') { return explicit; }
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    var render = function () {
+      var theme = effectiveTheme();
+      toggle.classList.toggle('is-dark', theme === 'dark');
+      toggle.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
+      toggle.setAttribute('aria-label', theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
+    };
+
+    var stored = getStored();
+    if (stored === 'light' || stored === 'dark') { root.setAttribute('data-theme', stored); }
+    render();
+
+    toggle.addEventListener('click', function () {
+      var next = effectiveTheme() === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      setStored(next);
+      render();
+    });
+  })();
+
   var bandMessages = [];
   fetch('messages.json')
     .then(function (r) { return r.json(); })

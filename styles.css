@@ -110,6 +110,18 @@
   @media (prefers-reduced-motion: reduce) {
     .wordmark { transition: none; }
   }
+  .site-head__right { display: flex; align-items: center; gap: var(--space-s); }
+  .theme-toggle {
+    display: flex; align-items: center; justify-content: center;
+    width: 40px; height: 40px; padding: 0;
+    border: 1px solid var(--line); border-radius: 50%;
+    background: transparent; color: var(--ink); cursor: pointer;
+    transition: transform 0.15s ease, background 0.2s ease;
+  }
+  .theme-toggle:hover { transform: scale(1.06); background: color-mix(in srgb, var(--ink) 8%, transparent); }
+  .theme-toggle__icon--moon { display: none; }
+  .theme-toggle.is-dark .theme-toggle__icon--sun { display: none; }
+  .theme-toggle.is-dark .theme-toggle__icon--moon { display: block; }
   .wordmark-name {
     font-family: 'Segoe Script', 'Bradley Hand', 'Lucida Handwriting', 'Brush Script MT', cursive;
     font-size: 1.9rem; color: var(--clay-deep);
