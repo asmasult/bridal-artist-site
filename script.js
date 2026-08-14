@@ -1,4 +1,9 @@
   (function () {
+    document.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+    document.addEventListener('dragstart', function (e) { e.preventDefault(); });
+  })();
+
+  (function () {
     var root = document.documentElement;
     var toggle = document.querySelector('.theme-toggle');
     if (!toggle) { return; }

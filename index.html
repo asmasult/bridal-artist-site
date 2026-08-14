@@ -4,7 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Fiza — Bridal Artist</title>
-<link rel="stylesheet" href="styles.css?v=1">
+<script>var SITE_VERSION = '3';</script>
+<script>document.write('<link rel="stylesheet" href="styles.css?v=' + SITE_VERSION + '">');</script>
 <link rel="preload" as="video" href="Image/IndianBride.mp4" type="video/mp4" fetchpriority="high">
 </head>
 <body>
@@ -55,7 +56,7 @@
 <section class="media-band">
   <div class="media-band__slide is-active">
     <div class="media-band__fallback" aria-hidden="true"></div>
-    <video class="media-band__video" muted playsinline preload="auto" fetchpriority="high">
+    <video class="media-band__video" muted playsinline preload="auto" fetchpriority="high" controlsList="nodownload" disablePictureInPicture>
       <source src="Image/IndianBride.mp4" type="video/mp4">
     </video>
     <div class="media-band__scrim" aria-hidden="true"></div>
@@ -68,7 +69,7 @@
   </div>
   <div class="media-band__slide">
     <div class="media-band__fallback" aria-hidden="true"></div>
-    <video class="media-band__video" muted playsinline preload="auto">
+    <video class="media-band__video" muted playsinline preload="auto" controlsList="nodownload" disablePictureInPicture>
       <source src="Image/MuslimBride.mp4" type="video/mp4">
     </video>
     <div class="media-band__scrim" aria-hidden="true"></div>
@@ -104,7 +105,7 @@
 
     <div class="hero-footer">
       <dl class="stat-strip reveal">
-        <div><dt>Training</dt><dd>Diploma in Bridal Makeup</dd></div>
+        <div><dt>Training</dt><dd>Diploma in Bridal Makeup, Hairstylist</dd></div>
         <div><dt>Bookings</dt><dd>One wedding, one day</dd></div>
         <div><dt>Pricing</dt><dd>Custom, by consultation</dd></div>
       </dl>
@@ -244,6 +245,11 @@
 </footer>
 
 
-<script src="script.js?v=1" defer></script>
+<script>
+  var s = document.createElement('script');
+  s.src = 'script.js?v=' + SITE_VERSION;
+  s.defer = true;
+  document.head.appendChild(s);
+</script>
 </body>
 </html>
