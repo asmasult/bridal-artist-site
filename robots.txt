@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://asmasult.github.io/bridal-artist-site/sitemap.xml
