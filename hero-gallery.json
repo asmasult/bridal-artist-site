@@ -1,0 +1,12 @@
+[
+  {
+    "type": "image",
+    "src": "Image/face/zainab_Face_1.jpeg",
+    "duration": 4500
+  },
+  {
+    "type": "video",
+    "src": "Image/face/zainab_face_video.mov",
+    "slowMotion": 0.5
+  }
+]

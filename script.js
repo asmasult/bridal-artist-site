@@ -109,23 +109,29 @@
       }
     }
     // How far each slide zooms in while active (1 = no zoom, 1.08 = 8%).
-    // Bump this to zoom more; override per-slide with a `zoom` field below.
+    // Bump this to zoom more; override per-slide with a `zoom` field in
+    // hero-gallery.json.
     var HERO_GALLERY_ZOOM = 1.18;
 
-    // Add new photos/videos here. To bring in another folder, just add
-    // entries pointing at it. `duration` (ms) is how long an image stays
-    // on screen before the next one. Videos have no duration — they play
-    // in full (at slowMotion speed, if set) and advance on their own when done.
-    var heroGallerySlides = [
-      { type: 'image', src: 'Image/face/zainab_Face_1.jpeg', duration: 4500 },
-      { type: 'image', src: 'Image/eye/zainab_Eye.jpeg', duration: 4500 },
-      { type: 'video', src: 'Image/face/zainab_face_video.mov', slowMotion: 0.5 }
+    // Photos/videos come from hero-gallery.json instead of being listed
+    // here. To change what shows: add or remove files under Image/<folder>/,
+    // then run `python generate-hero-gallery.py` to rebuild that file — no
+    // code edits needed. See generate-hero-gallery.py for the defaults it
+    // applies (duration for images, slow motion for videos).
+    var HERO_GALLERY_FALLBACK = [
+      { type: 'image', src: 'Image/face/zainab_Face_1.jpeg', duration: 4500 }
     ];
 
+    var buildHeroGallery = function (heroGallerySlides) {
     document.querySelectorAll('.hero-gallery').forEach(function (gallery) {
       var frame = gallery.querySelector('.hero-gallery__frame');
       var dotsWrap = gallery.querySelector('.hero-gallery__dots');
       if (!frame || !heroGallerySlides.length) { return; }
+
+      // A previous run may have already populated this frame — clear it
+      // before rebuilding so slides don't double up.
+      frame.innerHTML = '';
+      if (dotsWrap) { dotsWrap.innerHTML = ''; }
 
       var slideEls = heroGallerySlides.map(function (slide, idx) {
         var el;
@@ -200,6 +206,14 @@
         imageTimer = setTimeout(advance, heroGallerySlides[0].duration || 4500);
       }
     });
+    };
+
+    fetch('hero-gallery.json')
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        buildHeroGallery(Array.isArray(data) && data.length ? data : HERO_GALLERY_FALLBACK);
+      })
+      .catch(function () { buildHeroGallery(HERO_GALLERY_FALLBACK); });
   })();
 
   (function () {
