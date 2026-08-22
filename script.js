@@ -108,18 +108,97 @@
         setInterval(rotateCaption, captionInterval);
       }
     }
+    // How far each slide zooms in while active (1 = no zoom, 1.08 = 8%).
+    // Bump this to zoom more; override per-slide with a `zoom` field below.
+    var HERO_GALLERY_ZOOM = 1.18;
+
+    // Add new photos/videos here. To bring in another folder, just add
+    // entries pointing at it. `duration` (ms) is how long an image stays
+    // on screen before the next one. Videos have no duration — they play
+    // in full (at slowMotion speed, if set) and advance on their own when done.
+    var heroGallerySlides = [
+      { type: 'image', src: 'Image/face/zainab_Face_1.jpeg', duration: 4500 },
+      { type: 'image', src: 'Image/eye/zainab_Eye.jpeg', duration: 4500 },
+      { type: 'video', src: 'Image/face/zainab_face_video.mov', slowMotion: 0.5 }
+    ];
+
     document.querySelectorAll('.hero-gallery').forEach(function (gallery) {
-      var slides = gallery.querySelectorAll('.hero-gallery__slide');
+      var frame = gallery.querySelector('.hero-gallery__frame');
+      var dotsWrap = gallery.querySelector('.hero-gallery__dots');
+      if (!frame || !heroGallerySlides.length) { return; }
+
+      var slideEls = heroGallerySlides.map(function (slide, idx) {
+        var el;
+        if (slide.type === 'video') {
+          el = document.createElement('video');
+          el.muted = true;
+          el.playsInline = true;
+          el.preload = idx === 0 ? 'auto' : 'metadata';
+          el.src = slide.src;
+          var rate = slide.slowMotion || 1;
+          el.playbackRate = rate;
+          el.addEventListener('loadedmetadata', function () {
+            el.playbackRate = rate;
+            // Stretch the zoom animation to match the slowed-down runtime
+            // so it finishes right as the video ends.
+            el.style.setProperty('--hero-gallery-duration', (el.duration / rate) + 's');
+          });
+        } else {
+          el = document.createElement('img');
+          el.src = slide.src;
+          el.alt = '';
+          el.loading = idx === 0 ? 'eager' : 'lazy';
+          el.style.setProperty('--hero-gallery-duration', (slide.duration || 4500) / 1000 + 's');
+        }
+        el.style.setProperty('--hero-gallery-zoom', slide.zoom || HERO_GALLERY_ZOOM);
+        el.className = 'hero-gallery__slide' + (idx === 0 ? ' is-active' : '');
+        frame.appendChild(el);
+
+        if (dotsWrap) {
+          var dot = document.createElement('span');
+          dot.className = 'dot' + (idx === 0 ? ' is-active' : '');
+          dotsWrap.appendChild(dot);
+        }
+        return el;
+      });
+
       var dots = gallery.querySelectorAll('.dot');
-      if (slides.length <= 1 || reduceMotion) { return; }
+      if (slideEls.length <= 1 || reduceMotion) { return; }
+
       var i = 0;
-      setInterval(function () {
-        slides[i].classList.remove('is-active');
+      var imageTimer = null;
+
+      var advance = function () {
+        var current = slideEls[i];
+        if (current.tagName === 'VIDEO') { current.pause(); }
+        if (imageTimer) { clearTimeout(imageTimer); imageTimer = null; }
+        current.classList.remove('is-active');
         if (dots[i]) { dots[i].classList.remove('is-active'); }
-        i = (i + 1) % slides.length;
-        slides[i].classList.add('is-active');
+
+        i = (i + 1) % slideEls.length;
+        var next = slideEls[i];
+        next.classList.add('is-active');
         if (dots[i]) { dots[i].classList.add('is-active'); }
-      }, 4500);
+
+        if (next.tagName === 'VIDEO') {
+          next.currentTime = 0;
+          var p = next.play();
+          // If autoplay is blocked, don't get stuck on this slide forever.
+          if (p) { p.catch(advance); }
+        } else {
+          imageTimer = setTimeout(advance, heroGallerySlides[i].duration || 4500);
+        }
+      };
+
+      // Video slides advance themselves once playback finishes.
+      slideEls.forEach(function (el) { if (el.tagName === 'VIDEO') { el.addEventListener('ended', advance); } });
+
+      if (slideEls[0].tagName === 'VIDEO') {
+        var p0 = slideEls[0].play();
+        if (p0) { p0.catch(advance); }
+      } else {
+        imageTimer = setTimeout(advance, heroGallerySlides[0].duration || 4500);
+      }
     });
   })();
 
